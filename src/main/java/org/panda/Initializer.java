@@ -11,15 +11,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Locale;
 
 // Beware of that, this application does only support starting from Chrome version 120.0.6098.0
 public class Initializer {
     private static final String CHROME_PATH = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
     private static final String CHROME_DRIVER_DEST_PATH = "C:\\Users\\"+System.getProperty("user.name")+"\\Documents\\chromedriver";
     public static boolean initialize() {
-        if(System.getenv("CHROME_DRIVER")!=null) return true;
         if(new File(CHROME_PATH).exists()) {
             try {
+                if(System.getenv("CHROME_DRIVER")!=null && isSystemEnvironmentCorrect()) return true;
                 downloadChromeDriver(getChromeDriverDownloadLink());
                 extractZipFile();
                 copyChromeDriverToDestinationFolder();
@@ -37,6 +38,14 @@ public class Initializer {
     }
 
     // Beware of that, this application does only support starting from Chrome version 120.0.6098.0
+    private static boolean isSystemEnvironmentCorrect() throws ChromeRelatedException {
+        try {
+            return System.getenv("CHROME_DRIVER").toLowerCase().contains("chromedriver.exe");
+        } catch (Exception e) {
+            throw new ChromeRelatedException("CHROME_DRIVER environment variable is not correct.\n" +
+                    "Format should be -> C:\\.....\\chromedriver.exe");
+        }
+    }
     private static String getChromeDriverDownloadLink() throws ChromeRelatedException {
         try {
             String chromeVersion = CommandLine.i().getResultOfExecution("powershell -command (Get-Item '"+ CHROME_PATH +"').VersionInfo | findstr \"chrome.exe\"").split("\\s+")[0];
@@ -81,7 +90,7 @@ public class Initializer {
             Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new ChromeRelatedException("Failed to copy chromedriver to destination folder...\n" +
-                    "Error: "+e.getMessage());
+                    "Error: "+e.getLocalizedMessage());
         }
     }
 
