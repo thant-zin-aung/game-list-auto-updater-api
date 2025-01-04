@@ -1,9 +1,6 @@
 package org.panda;
 
-import org.panda.domains.automations.AutomateBrowser;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.panda.domains.scraping.IggGameWebScraper;
 
 public class Main {
     public static void main(String[] args) {
@@ -17,6 +14,8 @@ public class Main {
 //        });
 //        automateBrowser.closeBrowser();
 
+        IggGameWebScraper iggGameWebScraper = new IggGameWebScraper(2);
+        iggGameWebScraper.start();
 
     }
 }
