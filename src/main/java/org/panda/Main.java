@@ -17,9 +17,11 @@ public class Main {
 //        });
 //        automateBrowser.closeBrowser();
 
-        IggGameWebScraper iggGameWebScraper = new IggGameWebScraper(2);
-//        iggGameWebScraper.start();
-        iggGameWebScraper.getSpecificGamePageInfo();
+        IggGameWebScraper iggGameWebScraper = new IggGameWebScraper(58);
+        iggGameWebScraper.start();
+
+        //testing
+//        iggGameWebScraper.getGamePlayImages(null, null);
 
     }
 }
