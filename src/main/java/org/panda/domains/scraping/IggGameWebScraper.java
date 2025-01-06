@@ -41,7 +41,9 @@ public class IggGameWebScraper {
                     articleMap.put("articleTitle", articleTitle);
                     articleMapList.add(articleMap);
                 });
-                for (int articleCount = articleMapList.size()-1 ; articleCount >= 0 ; articleCount-- ) {
+//                for (int articleCount = articleMapList.size()-1 ; articleCount >= 0 ; articleCount-- ) {
+                //testing
+                for (int articleCount = 0 ; articleCount <= articleMapList.size()-1 ; articleCount++ ) {
                     System.out.println("Article Title: "+articleMapList.get(articleCount).get("articleTitle"));
                     System.out.println("Article id: "+articleMapList.get(articleCount).get("articleId"));
                     System.out.println("Article Link: "+articleMapList.get(articleCount).get("articleLink"));
@@ -72,8 +74,9 @@ public class IggGameWebScraper {
         Document document = Jsoup.connect(articleMap.get("articleLink")).get();
         getGenreList(document);
         getSpecificationList(document);
-        getDownloadLinks(document);
-        getGamePlayImages(document, articleMap);
+//        getDownloadLinks(document);
+//        getGamePlayImages(document, articleMap);
+        System.out.println("-".repeat(20));
     }
 
     public void getGenreList(Document document) {
@@ -83,7 +86,7 @@ public class IggGameWebScraper {
         System.out.println("Genre list: "+genreList);
     }
 
-    public void getSpecificationList(Document document) {
+    public List<Map<String, String>> getSpecificationList(Document document) {
         List<Map<String, String>> specList = new LinkedList<>();
         Elements totalSpec = document.select(".uk-heading-bullet strong");
         for (int specCount = 5 ; specCount <= (totalSpec.size() == 2 ? 6 : 5) ; specCount++ ) {
@@ -97,9 +100,28 @@ public class IggGameWebScraper {
                 }
             });
             specList.add(specMap);
-            if(totalSpec.size()==1) specList.add(specMap);
         }
+        // preventing game specification from being not exist
+        if(specList.size() == 0) {
+            specList.add(new LinkedHashMap<>());
+            specList.add(new LinkedHashMap<>());
+            specList.forEach(specMap -> {
+                List<String> specFormatList = new LinkedList<>(List.of("os","processor","memory","graphics","storage"));
+                specFormatList.forEach(format -> specMap.putIfAbsent(format, "-"));
+            });
+        }
+        System.out.println("spec list size: "+specList.size());
+        if(specList.size()==1 || (specList.size()==2 && specList.get(1).size()==0)) {
+            specList.remove(1);
+            specList.add(specList.get(0));
+        }
+        specList.forEach(specMap -> {
+            List<String> specFormatList = new LinkedList<>(List.of("os","processor","memory","graphics","storage"));
+            specFormatList.forEach(format -> specMap.putIfAbsent(format, "-"));
+        });
         System.out.println("Specification List: "+specList);
+        // preventing game specification from being not exist
+        return specList;
     }
 
     private List<String> getDownloadLinks(Document document) throws ChromeRelatedException {

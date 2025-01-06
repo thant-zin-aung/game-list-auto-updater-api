@@ -68,20 +68,16 @@ public class IggGameAutomateBrowser implements AutoCloseable {
         long elapsedTime = endTime - startTime;
         double elapsedTimeInMilliseconds = elapsedTime / 1_000_000_000.0;
         System.out.println("Processing time: ".concat(String.format("%.2f",elapsedTimeInMilliseconds)).concat("s"));
-        System.out.println("-".repeat(20));
         return isGameExist;
     }
 
     public List<String> getActualGameLinks(List<String> redirectLinks, int totalBrowser) throws ChromeRelatedException {
         if(totalBrowser > MAX_BROWSER_COUNT ) throw new ChromeRelatedException("Maximum browser per process is 10 and cannot be exceeded!");
         List<String> actualGameDownloadLinks = new LinkedList<>();
-        boolean allThreadExecutedFlag = false;
-        int executedThreadCount = 0;
         int totalLink = redirectLinks.size();
         totalBrowser = Math.min(totalBrowser, totalLink);
         int totalLinkPerBrowser = totalLink/totalBrowser;
         System.out.println("Totallinkperbrowser: "+totalLinkPerBrowser);
-//        int browserCounter = 1;
         int startIndex = 0;
         for (int browserCount = 1 ; browserCount <= totalBrowser ; browserCount++) {
             List<String> seperatedRedirectLinks = new LinkedList<>();

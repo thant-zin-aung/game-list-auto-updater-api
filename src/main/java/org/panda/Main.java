@@ -17,7 +17,7 @@ public class Main {
 //        });
 //        automateBrowser.closeBrowser();
 
-        IggGameWebScraper iggGameWebScraper = new IggGameWebScraper(58);
+        IggGameWebScraper iggGameWebScraper = new IggGameWebScraper(2);
         iggGameWebScraper.start();
 
         //testing
