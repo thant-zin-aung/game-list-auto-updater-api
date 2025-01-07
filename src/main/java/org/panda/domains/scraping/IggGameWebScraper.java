@@ -5,6 +5,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.panda.domains.automations.IggGameAutomateBrowser;
+import org.panda.domains.youtube.YoutubeDataFetcher;
 import org.panda.exceptions.ChromeRelatedException;
 
 import java.io.IOException;
@@ -55,14 +56,14 @@ public class IggGameWebScraper {
         } catch (IOException e) {
             System.out.println("Error while connecting to "+GAME_WEB_URL);
             System.out.println("Error message: "+e.getMessage());
-        } catch (ChromeRelatedException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
             iggGameAutomateBrowser.closeBrowser();
         }
     }
 
-    private void uploadGameToServer(Map<String, String> articleMap) throws IOException, ChromeRelatedException {
+    private void uploadGameToServer(Map<String, String> articleMap) throws Exception {
         getSpecificGamePageInfo(articleMap);
     }
 
@@ -70,12 +71,13 @@ public class IggGameWebScraper {
     // Requesting target website several times may lead to ip blocking (403, Unauthorized).
     // If so, you need to wait specific amount of time to request that website again.
     // Btw, you can use vpn to request again immediately once you got ip blocking
-    public void getSpecificGamePageInfo(Map<String, String> articleMap) throws IOException, ChromeRelatedException {
+    public void getSpecificGamePageInfo(Map<String, String> articleMap) throws Exception {
         Document document = Jsoup.connect(articleMap.get("articleLink")).get();
         getGenreList(document);
         getSpecificationList(document);
 //        getDownloadLinks(document);
 //        getGamePlayImages(document, articleMap);
+        getYoutubeTrailerLink(articleMap);
         System.out.println("-".repeat(20));
     }
 
@@ -169,25 +171,12 @@ public class IggGameWebScraper {
             }
 
         }
-
-        //testing
-//        Document mrPcGamerDocument = Jsoup.connect("https://mrpcgamer.net/?s=assassin's creed syndicate").get();
-//        Elements aTagGameInfoList = mrPcGamerDocument.select("article .post-title a");
-//        aTagGameInfoList.forEach(title -> {
-//            String fetchedGameTitle = title.text();
-//            String searchGameTitle = "Assassin's creed syndicate";
-//            System.out.println(title.text());
-//            System.out.println("-".repeat(20));
-//            if(containsIgnoreCharacters(fetchedGameTitle, searchGameTitle)) {
-//                System.out.println("Search matched:");
-//                System.out.println("Search title: "+searchGameTitle);
-//                System.out.println("Fetched title: "+fetchedGameTitle);
-//            }
-//            System.out.println("-".repeat(20));
-//        });
-        //testing
         imageList.forEach(System.out::println);
         return imageList;
+    }
+
+    private static String getYoutubeTrailerLink(Map<String, String> articleMap) throws Exception {
+        return YoutubeDataFetcher.fetch(articleMap.get("articleTitle"));
     }
 
     private static boolean containsIgnoreCharacters(String target, String search) {

@@ -16,6 +16,7 @@ import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.SearchResultSnippet;
 
 import java.io.*;
+import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -48,7 +49,7 @@ public class YoutubeDataFetcher {
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 
-    public static void fetch() throws Exception {
+    public static String fetch(String searchGameTitle) throws Exception {
         final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         Credential credential = authorize(httpTransport);
 
@@ -58,7 +59,7 @@ public class YoutubeDataFetcher {
 
         YouTube.Search.List request = youtubeService.search().list("snippet");
 
-        request.setQ("The Witcher 3 PC Game Trailer");
+        request.setQ(searchGameTitle.concat(" PC Game Trailer"));
         request.setType("video");
         request.setMaxResults(10L);
 
@@ -69,6 +70,9 @@ public class YoutubeDataFetcher {
         if (searchResults != null) {
             for (SearchResult result : searchResults) {
                 SearchResultSnippet snippet = result.getSnippet();
+                if(containsIgnoreCharacters(snippet.getTitle(), searchGameTitle)) {
+                    return "https://www.youtube.com/embed/".concat(result.getId().getVideoId());
+                }
                 System.out.println("Title: " + snippet.getTitle());
                 System.out.println("Description: " + snippet.getDescription());
                 System.out.println("Video ID: " + result.getId().getVideoId());
@@ -78,5 +82,12 @@ public class YoutubeDataFetcher {
         } else {
             System.out.println("No results found.");
         }
+        return null;
+    }
+
+    private static boolean containsIgnoreCharacters(String target, String search) {
+        String filteredTarget = target.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        String filteredSearch = search.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        return filteredTarget.contains(filteredSearch);
     }
 }

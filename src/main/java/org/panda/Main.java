@@ -13,7 +13,7 @@ public class Main {
 //        iggGameWebScraper.start();
 
         try {
-            YoutubeDataFetcher.fetch();
+            System.out.println(YoutubeDataFetcher.fetch("The Witcher 3 wild hunt"));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
