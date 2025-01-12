@@ -1,5 +1,6 @@
 package org.panda;
 
+import org.panda.domains.facebook.FacebookHandler;
 import org.panda.domains.scraping.IggGameWebScraper;
 import org.panda.domains.youtube.YoutubeDataFetcher;
 import org.panda.exceptions.ChromeRelatedException;
@@ -12,11 +13,7 @@ public class Main {
 //        IggGameWebScraper iggGameWebScraper = new IggGameWebScraper(2);
 //        iggGameWebScraper.start();
 
-        try {
-            System.out.println(YoutubeDataFetcher.fetch("The Witcher 3 wild hunt"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        FacebookHandler.post();
 
     }
 }
