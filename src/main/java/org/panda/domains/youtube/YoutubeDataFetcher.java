@@ -14,6 +14,7 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.SearchResultSnippet;
+import org.panda.util.CommandLine;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
@@ -29,6 +30,10 @@ public class YoutubeDataFetcher {
 
     private static void createRefreshTokenDirectory() {
         if(!new File(TOKENS_DIRECTORY_PATH).exists()) new File(TOKENS_DIRECTORY_PATH).mkdir();
+    }
+
+    public static void deleteRefreshTokenDirectory() {
+        System.out.println("Deleting existing youtube refresh token status: "+new File(TOKENS_DIRECTORY_PATH+"\\StoredCredential").delete());
     }
 
     private static Credential authorize(final NetHttpTransport httpTransport) throws Exception {
@@ -71,17 +76,17 @@ public class YoutubeDataFetcher {
             for (SearchResult result : searchResults) {
                 SearchResultSnippet snippet = result.getSnippet();
                 if(containsIgnoreCharacters(snippet.getTitle(), searchGameTitle)) {
+                    System.out.println("URL: https://www.youtube.com/watch?v=" + result.getId().getVideoId());
                     return "https://www.youtube.com/embed/".concat(result.getId().getVideoId());
                 }
-                System.out.println("Title: " + snippet.getTitle());
-                System.out.println("Description: " + snippet.getDescription());
-                System.out.println("Video ID: " + result.getId().getVideoId());
-                System.out.println("URL: https://www.youtube.com/watch?v=" + result.getId().getVideoId());
-                System.out.println("=========================================");
+//                System.out.println("Title: " + snippet.getTitle());
+//                System.out.println("Description: " + snippet.getDescription());
+//                System.out.println("Video ID: " + result.getId().getVideoId());
+//                System.out.println("URL: https://www.youtube.com/watch?v=" + result.getId().getVideoId());
+//                System.out.println("=========================================");
             }
-        } else {
-            System.out.println("No results found.");
         }
+        System.out.println("No results found.");
         return null;
     }
 

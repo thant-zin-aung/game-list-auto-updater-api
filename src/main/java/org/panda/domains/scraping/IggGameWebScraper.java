@@ -75,8 +75,8 @@ public class IggGameWebScraper {
         Document document = Jsoup.connect(articleMap.get("articleLink")).get();
         getGenreList(document);
         getSpecificationList(document);
-//        getDownloadLinks(document);
-//        getGamePlayImages(document, articleMap);
+        getDownloadLinks(document);
+        getGamePlayImages(document, articleMap);
         getYoutubeTrailerLink(articleMap);
         System.out.println("-".repeat(20));
     }
@@ -114,7 +114,7 @@ public class IggGameWebScraper {
         }
         System.out.println("spec list size: "+specList.size());
         if(specList.size()==1 || (specList.size()==2 && specList.get(1).size()==0)) {
-            specList.remove(1);
+            if(specList.size()==2) specList.remove(1);
             specList.add(specList.get(0));
         }
         specList.forEach(specMap -> {
@@ -175,8 +175,19 @@ public class IggGameWebScraper {
         return imageList;
     }
 
-    private static String getYoutubeTrailerLink(Map<String, String> articleMap) throws Exception {
-        return YoutubeDataFetcher.fetch(articleMap.get("articleTitle"));
+    private static String getYoutubeTrailerLink(Map<String, String> articleMap) {
+        try {
+            return YoutubeDataFetcher.fetch(articleMap.get("articleTitle"));
+        } catch (Exception e) {
+            YoutubeDataFetcher.deleteRefreshTokenDirectory();
+            try {
+                return YoutubeDataFetcher.fetch(articleMap.get("articleTitle"));
+            } catch (Exception ee) {
+                System.out.println(ee.getMessage());
+                ee.printStackTrace();
+            }
+        }
+        return null;
     }
 
     private static boolean containsIgnoreCharacters(String target, String search) {
