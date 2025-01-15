@@ -11,14 +11,13 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class FacebookHandler {
-    private static final String ENV_FB_USER_TOKEN_KEY = "fb_user_access_token";
     private static final String ENV_FB_PAGE_TOKEN_KEY = "fb_long_live_page_access_token";
     private static final String ENV_FB_APP_ID_KEY = "fb_app_id";
     private static final String ENV_FB_APP_SECRET_KEY = "fb_app_secret";
     private static final String BASE_URL = "https://graph.facebook.com/v21.0";
-    static String appScopeUserId = "2295734984145341";
-    static String appId = "587519854112328";
-    static String appSecret = "9201df7ce8f1799dab84f6712b88a550";
+//    static String appScopeUserId = "2295734984145341";
+//    static String appId = "587519854112328";
+//    static String appSecret = "9201df7ce8f1799dab84f6712b88a550";
 
     public static void post() {
         String endPointUrl = BASE_URL+"/208701392320007/photos";
@@ -81,7 +80,7 @@ public class FacebookHandler {
         }
     }
 
-    private static String getLongLivedUserToken(String shortLivedToken) throws IOException {
+    private static String getLongLivedUserToken(String appId, String appSecret, String shortLivedToken) throws IOException {
         OkHttpClient client = new OkHttpClient();
         HttpUrl url = HttpUrl.parse(BASE_URL + "/oauth/access_token").newBuilder()
                 .addQueryParameter("grant_type", "fb_exchange_token")
@@ -103,7 +102,7 @@ public class FacebookHandler {
         }
     }
 
-    private static String getPageAccessToken(String longLivedUserToken) throws IOException {
+    private static String getPageAccessToken(String appScopeUserId, String longLivedUserToken) throws IOException {
         OkHttpClient client = new OkHttpClient();
 
         HttpUrl url = HttpUrl.parse(BASE_URL + "/"+appScopeUserId+"/accounts").newBuilder()
@@ -133,13 +132,13 @@ public class FacebookHandler {
         }
     }
 
-    public static void extendPageAccessToken(String appId, String appSecret, String shortLiveUserAccessToken, String shortLivePageAccessToken) {
+    public static void extendPageAccessToken(String appId, String appSecret, String appScopeUserId, String shortLivePageAccessToken) {
 
         try {
             // Step 1: Get Long-Lived User Token
-            String longLivedUserToken = getLongLivedUserToken(shortLivePageAccessToken);
+            String longLivedUserToken = getLongLivedUserToken(appId, appSecret, shortLivePageAccessToken);
             // Step 2: Get Page Access Token
-            String pageAccessTokenJson = getPageAccessToken(longLivedUserToken);
+            String pageAccessTokenJson = getPageAccessToken(appScopeUserId, longLivedUserToken);
             System.out.println("Page Access Token Response: " + pageAccessTokenJson);
 
             JsonObject jsonObject = JsonParser.parseString(pageAccessTokenJson).getAsJsonObject();
