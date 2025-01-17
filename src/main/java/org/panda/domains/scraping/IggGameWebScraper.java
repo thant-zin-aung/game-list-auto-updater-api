@@ -98,7 +98,7 @@ public class IggGameWebScraper {
                 if(spec.text().toLowerCase().contains("os:") || spec.text().toLowerCase().contains("processor:") || spec.text().toLowerCase().contains("memory:") ||
                         spec.text().toLowerCase().contains("graphics:") || spec.text().toLowerCase().contains("storage:")) {
                     String[] pair = spec.text().split(": ");
-                    specMap.put(pair[0].toLowerCase(), pair[1]);
+                    specMap.put(pair[0].toLowerCase(), pair.length==2 ? pair[1] : "-");
                 }
             });
             specList.add(specMap);
