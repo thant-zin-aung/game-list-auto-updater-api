@@ -2,6 +2,9 @@ package org.panda.domains.automations;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -22,7 +25,7 @@ import java.util.List;
 
 public class IggGameAutomateBrowser implements AutoCloseable {
     private final int MAX_BROWSER_COUNT = 10;
-    private final String WEB_ROOT_URL = "https://blackskypcgamestore.infinityfreeapp.com";
+    private final String WEB_ROOT_URL = "https://blackskypcgamestore.x10.mx";
     private final WebDriver driver;
     public IggGameAutomateBrowser() {
         System.setProperty("webdriver.chrome.driver", System.getenv("CHROME_DRIVER"));
@@ -35,8 +38,27 @@ public class IggGameAutomateBrowser implements AutoCloseable {
     }
 
     public boolean checkGameAlreadyExist(String gameTitle) {
-        //testing
-        return false;
+        boolean existFlag = false;
+        String gameExistCheckerUrl = WEB_ROOT_URL+"/admin_panel/exist-game-checker.php?game_title="+gameTitle;
+        OkHttpClient client = new OkHttpClient();
+
+        // Create a request
+        Request request = new Request.Builder()
+                .url(gameExistCheckerUrl)
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful() && response.body() != null) {
+                String jsonData = response.body().string();
+                JsonObject jsonObject = JsonParser.parseString(jsonData).getAsJsonObject();
+                existFlag = jsonObject.get("already_exist").getAsBoolean();
+                System.out.println("Game Exist: " + existFlag);
+            } else {
+                System.err.println("Request failed with code: " + response.code());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return existFlag;
 //        boolean isGameExist;
 //        long startTime = System.nanoTime();
 //        // Cause upload server do not accept ' in text...

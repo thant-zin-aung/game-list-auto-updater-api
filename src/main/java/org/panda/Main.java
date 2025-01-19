@@ -1,5 +1,6 @@
 package org.panda;
 
+import org.panda.domains.automations.IggGameAutomateBrowser;
 import org.panda.domains.facebook.FacebookHandler;
 import org.panda.domains.scraping.IggGameWebScraper;
 import org.panda.domains.youtube.YoutubeDataFetcher;
@@ -10,9 +11,11 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) throws IOException, ChromeRelatedException {
 //        System.out.println(Initializer.initialize() ? "Ready to use..." : "Failed to use");
-        IggGameWebScraper iggGameWebScraper = new IggGameWebScraper(2);
-        iggGameWebScraper.start();
+//        IggGameWebScraper iggGameWebScraper = new IggGameWebScraper(2);
+//        iggGameWebScraper.start();
 
+        IggGameAutomateBrowser iggGameAutomateBrowser = new IggGameAutomateBrowser();
+        iggGameAutomateBrowser.checkGameAlreadyExist("nightmaer");
 //        FacebookHandler.extendPageAccessToken();
 
 //        String shortLiveAccessToken = "EAAIWWKAz7kgBOzajvUsvfnNcTLdoIulVNQWZADbkpeZAR5wnZAr17c3mdCY2ahA4MFZCxJoZCCnNRwC0LtcfYFZB5e0lUdS84XjjwetWADKLF6hgZBvpiYFcHGW9IvJsuGaTKFOTZCrZCbXESkUqa3eBcGeXUuLVrsD1PMhzDabwsxgBm8DWtRbQQb03fXFdVVGDEE8Rhkdzc9RVGNLAZCxvbjYVMKFgZDZD";
